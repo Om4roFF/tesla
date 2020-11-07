@@ -1,0 +1,5 @@
+api = '354fead3-a98d-11ea-a443-ac1f6b478310'
+site = 'teslaedu1'
+email = 'aidos.seksenaly@gmail.com'
+password = 'Galamat***'
+TOKEN = '1404329708:AAEHtLYg7TT4X3Gv-KJcBZr9dRdTyHD6jHw'
