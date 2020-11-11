@@ -7,3 +7,4 @@ class States(StatesGroup):
     grade: State = State()
     phone: State = State()
     lang: State = State()
+    delete: State = State()

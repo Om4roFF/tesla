@@ -35,7 +35,7 @@ def insert_homework(date, homework, group):
 def insert(chat_id, student_id, lang, name):
     s = select()
     for i in s:
-        if i[0] == chat_id:
+        if str(i[0]) == str(chat_id) and str(i[1]) == str(student_id):
             return -1
     sql = 'INSERT INTO chat VALUES ({0},{1},{2},\'{3}\')'.format(chat_id, student_id, lang, name)
     print(sql)
@@ -50,6 +50,12 @@ def select():
     return l
 
 
+def select_by_id(chat_id):
+    cursor.execute('SELECT * FROM chat WHERE chat_id = {0}'.format(chat_id))
+    s = cursor.fetchall()
+    return s
+
+
 def select_homework():
     cursor.execute('''SELECT * FROM homework''')
     l = cursor.fetchall()
@@ -57,13 +63,12 @@ def select_homework():
     return l
 
 
-
 def is_user(chat_id):
     cursor.execute('SELECT COUNT(*) FROM chat WHERE chat_id = {0}'.format(chat_id))
     s = cursor.fetchall()
     return s[0][0] > 0
 
-# create_table()
-# insert(1234, 2314,1,"hbhhbhb")
-# l = select()
-# print(l)
+
+def delete_from_chat(chat_id, name):
+    cursor.execute('DELETE FROM chat WHERE chat_id = {0} and name = \'{1}\''.format(chat_id, name))
+    conn.commit()

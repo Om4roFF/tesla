@@ -1,18 +1,18 @@
 import datetime
 import json
 import re
+import time
 
 import requests
 from config import email, site, api
 
-token = requests.post('https://{0}.s20.online/v2api/auth/login'.format(site),
-                      json={'email': email, 'api_key': api}).text
 
-TOKEN = token[10:len(token) - 2]
-headers = {'X-ALFACRM-TOKEN': TOKEN}
+async def branches():
+    token = requests.post('https://{0}.s20.online/v2api/auth/login'.format(site),
+                          json={'email': email, 'api_key': api}).text
 
-
-def branches():
+    TOKEN = token[10:len(token) - 2]
+    headers = {'X-ALFACRM-TOKEN': TOKEN}
     branch = requests.post('https://{0}.s20.online/v2api/branch/index'.format(site), headers=headers).content
     branch_str = branch.decode('utf-8')
     # branch_str = branch_str.split('{')
@@ -22,7 +22,12 @@ def branches():
     # items = items.split(',')
 
 
-def customers(id):
+async def customers(id):
+    token = requests.post('https://{0}.s20.online/v2api/auth/login'.format(site),
+                          json={'email': email, 'api_key': api}).text
+
+    TOKEN = token[10:len(token) - 2]
+    headers = {'X-ALFACRM-TOKEN': TOKEN}
     customer = requests.post('https://{0}.s20.online/v2api/1/customer/index'.format(site), headers=headers,
                              json={"id": id}).content
     customer = customer.decode('utf-8')
@@ -46,17 +51,21 @@ def customers(id):
                 return i
 
 
-def get_name(text):
+async def get_name(text):
     customer_list = text.split(',')
     s = customer_list[3]
     s = s.split(':')
     name = s[1]
     name = name.replace("'", " ")
-    name.strip()
     return name
 
 
-def get_grade(ID):
+async def get_grade(ID):
+    token = requests.post('https://{0}.s20.online/v2api/auth/login'.format(site),
+                          json={'email': email, 'api_key': api}).text
+
+    TOKEN = token[10:len(token) - 2]
+    headers = {'X-ALFACRM-TOKEN': TOKEN}
     report = list()
     lessons = requests.post('https://{0}.s20.online/v2api/1/lesson/index'.format(site), headers=headers).text
     a = json.loads(lessons.replace("'", '"'))
@@ -108,7 +117,12 @@ def get_grade(ID):
     return report
 
 
-def is_phone(p):
+async def is_phone(p):
+    token = requests.post('https://{0}.s20.online/v2api/auth/login'.format(site),
+                          json={'email': email, 'api_key': api}).text
+
+    TOKEN = token[10:len(token) - 2]
+    headers = {'X-ALFACRM-TOKEN': TOKEN}
     phone = ''
     if len(p) == 12:
         phone = p[0] + p[1] + '(' + p[2] + p[3] + p[4] + ')' + p[5] + p[6] + p[7] + '-' + p[8] + p[9] + '-' + p[10] + p[11]
@@ -126,3 +140,45 @@ def is_phone(p):
     return None
 
 
+async def get_id_by_lesson(i_d):
+    token = requests.post('https://{0}.s20.online/v2api/auth/login'.format(site),
+                          json={'email': email, 'api_key': api}).text
+
+    TOKEN = token[10:len(token) - 2]
+    headers = {'X-ALFACRM-TOKEN': TOKEN}
+    lessons = requests.post('https://{0}.s20.online/v2api/1/lesson/index'.format(site), headers=headers).text
+    a = json.loads(lessons.replace("'", '"'))
+    total = a['total']
+    count = int(total) / 20 + 1
+    for x in range(int(count)):
+        lessons1 = requests.post('https://{0}.s20.online/v2api/1/lesson/index'.format(site), json={'page': x},
+                                 headers=headers).text
+        b = json.loads(lessons1.replace("'", '"'))
+        time.sleep(1)
+        items = b['items']
+        for i in items:
+            details = i['details']
+            for j in details:
+                if i_d == j['customer_id']:
+                    return i_d
+    return 0
+
+
+# k = customers(3530)
+# print(k)
+# name = get_name(k)
+# print(name)
+# s = get_id_by_lesson(3530)
+# print(s)
+# id = is_phone('87788881311')
+# print(id)
+#
+# grade = get_grade(3265)
+# print(grade)
+# +7(707)931-66-28
+# for x in range(int(4)):
+#     lessons1 = requests.post('https://{0}.s20.online/v2api/1/lesson/index'.format(site), json={'page': x},
+#                              headers=headers).text
+#     b = json.loads(lessons1.replace("'", '"'))
+#     items = b['items']
+#     print(items)
