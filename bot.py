@@ -278,7 +278,7 @@ def repeat(coro, loop):
     secs = delta_t.seconds
     print('seconds in repeat ' + str(secs))
     asyncio.ensure_future(coro(), loop=loop)
-    loop.call_later(120, repeat, coro, loop)
+    loop.call_later(secs, repeat, coro, loop)
 
 
 if __name__ == '__main__':
