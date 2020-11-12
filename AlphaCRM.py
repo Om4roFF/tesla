@@ -68,13 +68,13 @@ async def get_grade(ID):
     headers = {'X-ALFACRM-TOKEN': TOKEN}
     report = list()
     lessons = requests.post('https://{0}.s20.online/v2api/1/lesson/index'.format(site), headers=headers).text
-    a = json.loads(lessons.replace("'", '"'))
+    a = json.loads(lessons)
     total = a['total']
     count = int(total) / 20 + 1
     for x in range(int(count)):
         lessons1 = requests.post('https://{0}.s20.online/v2api/1/lesson/index'.format(site), json={'page': x},
                                  headers=headers).text
-        b = json.loads(lessons1.replace("'", '"'))
+        b = json.loads(lessons1)
         items = b['items']
         for i in items:
             details = i['details']
@@ -147,13 +147,15 @@ async def get_id_by_lesson(i_d):
     TOKEN = token[10:len(token) - 2]
     headers = {'X-ALFACRM-TOKEN': TOKEN}
     lessons = requests.post('https://{0}.s20.online/v2api/1/lesson/index'.format(site), headers=headers).text
-    a = json.loads(lessons.replace("'", '"'))
+    print(lessons)
+    a = json.loads(lessons)
+    print(a)
     total = a['total']
     count = int(total) / 20 + 1
     for x in range(int(count)):
         lessons1 = requests.post('https://{0}.s20.online/v2api/1/lesson/index'.format(site), json={'page': x},
                                  headers=headers).text
-        b = json.loads(lessons1.replace("'", '"'))
+        b = json.loads(lessons1)
         time.sleep(1)
         items = b['items']
         for i in items:
@@ -176,9 +178,20 @@ async def get_id_by_lesson(i_d):
 # grade = get_grade(3265)
 # print(grade)
 # +7(707)931-66-28
+# token = requests.post('https://{0}.s20.online/v2api/auth/login'.format(site),
+#                       json={'email': email, 'api_key': api}).text
+#
+# TOKEN = token[10:len(token) - 2]
+# headers = {'X-ALFACRM-TOKEN': TOKEN}
 # for x in range(int(4)):
+#
 #     lessons1 = requests.post('https://{0}.s20.online/v2api/1/lesson/index'.format(site), json={'page': x},
 #                              headers=headers).text
-#     b = json.loads(lessons1.replace("'", '"'))
+#     print(lessons1)
+#     b = json.loads(lessons1)
 #     items = b['items']
 #     print(items)
+
+
+# get_grade(3530)
+

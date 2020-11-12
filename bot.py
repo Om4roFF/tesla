@@ -1,4 +1,6 @@
 import datetime
+import time
+
 from aiogram import Dispatcher, Bot, executor, types
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.dispatcher import FSMContext
@@ -225,7 +227,7 @@ async def delete(message: types.Message):
     lang = 1
     for i in list_of_students:
         lang = i[2]
-        inline.add(types.InlineKeyboardButton(i[3], callback_data=str(i[3])+'/' + str(message.chat.id)))
+        inline.add(types.InlineKeyboardButton(i[3], callback_data=str(i[3]) + '/' + str(message.chat.id)))
     inline.add(types.InlineKeyboardButton('Назад', callback_data='/start'))
     await bot.send_message(message.chat.id, lang_phrases(lang, 15), reply_markup=inline)
     await States.delete.set()
@@ -234,20 +236,20 @@ async def delete(message: types.Message):
 async def send_message():
     await bot.send_message(877012379, 'send message')
     l = select()
-    print(l)
     for j in l:
+        time.sleep(1)
         report = await get_grade(j[1])
+        bonus = ''
+        note = ''
+        done = ''
+        tasks = ''
+        right_task = ''
         for i in report:
             length = len(i)
             time_from = i[1]
             date = time_from[:10]
             topic = i[3]
             subject = i[2]
-            bonus = ''
-            note = ''
-            done = ''
-            tasks = ''
-            right_task = ''
             if length == 7:
                 done = i[4]
                 bonus = i[5]
@@ -263,29 +265,28 @@ async def send_message():
             if note is None:
                 note = ''
             if date == str(datetime.datetime.today().date()):
-                print('ok')
-                await bot.send_message(j[0], lang_phrases(j[2], 12).format(j[3], date, subject,
-                                                                           topic, tasks, done, right_task, bonus, note))
-            break
+                await bot.send_message(j[0], lang_phrases(j[2], 12).format(j[3],
+                                                                           date, subject,
+                                                                           topic, tasks, done,
+                                                                           right_task, bonus, note))
 
 
 def repeat(coro, loop):
     x = datetime.datetime.today()
-    y = x.replace(day=x.day, hour=20, minute=37, second=0, microsecond=0)
+    y = x.replace(day=x.day, hour=14, minute=0, second=0, microsecond=0)
     delta_t = y - x
     secs = delta_t.seconds
-    print('secs in repeat')
-    print(secs)
+    print('seconds in repeat ' + str(secs))
     asyncio.ensure_future(coro(), loop=loop)
-    loop.call_later(secs, repeat, coro, loop)
+    loop.call_later(120, repeat, coro, loop)
 
 
 if __name__ == '__main__':
     loop = asyncio.get_event_loop()
     x = datetime.datetime.today()
-    y = x.replace(day=x.day, hour=20, minute=37, second=0, microsecond=0)
+    y = x.replace(day=x.day, hour=14, minute=2, second=0, microsecond=0)
     delta_t = y - x
     secs = delta_t.seconds
-    print(secs)
+    print('seconds in main ' + str(secs))
     loop.call_later(secs, repeat, send_message, loop)
     executor.start_polling(dp, loop=loop)
