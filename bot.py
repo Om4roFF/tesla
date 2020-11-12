@@ -228,7 +228,7 @@ async def delete(message: types.Message):
     for i in list_of_students:
         lang = i[2]
         inline.add(types.InlineKeyboardButton(i[3], callback_data=str(i[3]) + '/' + str(message.chat.id)))
-    inline.add(types.InlineKeyboardButton('Назад', callback_data='/start'))
+    inline.add(types.InlineKeyboardButton('Назад ↵', callback_data='/start'))
     await bot.send_message(message.chat.id, lang_phrases(lang, 15), reply_markup=inline)
     await States.delete.set()
 
