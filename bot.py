@@ -1,6 +1,6 @@
 import datetime
 import time
-
+import aioschedule as schedule
 from aiogram import Dispatcher, Bot, executor, types
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.dispatcher import FSMContext
@@ -18,6 +18,7 @@ HTML = types.ParseMode.HTML
 
 @dp.message_handler(commands=['start'])
 async def start(message: types.Message):
+    print('start')
     markup = types.InlineKeyboardMarkup()
     markup.add(types.InlineKeyboardButton(text='Рус ' + "🇷🇺", callback_data='Рус'))
     markup.add(types.InlineKeyboardButton(text='Қаз ' + "🇰🇿", callback_data='Қаз'))
@@ -234,9 +235,10 @@ async def delete(message: types.Message):
 
 
 async def send_message():
-    await bot.send_message(877012379, 'send message')
     l = select()
+    print(l)
     for j in l:
+        print(j)
         time.sleep(1)
         report = await get_grade(j[1])
         bonus = ''
@@ -245,6 +247,7 @@ async def send_message():
         tasks = ''
         right_task = ''
         for i in report:
+            print(i)
             length = len(i)
             time_from = i[1]
             date = time_from[:10]
@@ -265,28 +268,40 @@ async def send_message():
             if note is None:
                 note = ''
             if date == str(datetime.datetime.today().date()):
+                await bot.send_message(877012379, j[0])
+                print('here')
                 await bot.send_message(j[0], lang_phrases(j[2], 12).format(j[3],
                                                                            date, subject,
                                                                            topic, tasks, done,
                                                                            right_task, bonus, note))
 
 
-def repeat(coro, loop):
-    x = datetime.datetime.today()
-    y = x.replace(day=x.day, hour=14, minute=0, second=0, microsecond=0)
-    delta_t = y - x
-    secs = delta_t.seconds
-    print('seconds in repeat ' + str(secs))
-    asyncio.ensure_future(coro(), loop=loop)
-    loop.call_later(secs, repeat, coro, loop)
+async def scheduler():
+    schedule.every().day.at("20:00").do(send_message)
+    while True:
+        await schedule.run_pending()
+        await asyncio.sleep(1)
+
+
+async def on_startup(x):
+    asyncio.create_task(scheduler())
 
 
 if __name__ == '__main__':
-    loop = asyncio.get_event_loop()
-    x = datetime.datetime.today()
-    y = x.replace(day=x.day, hour=14, minute=2, second=0, microsecond=0)
-    delta_t = y - x
-    secs = delta_t.seconds
-    print('seconds in main ' + str(secs))
-    loop.call_later(secs, repeat, send_message, loop)
-    executor.start_polling(dp, loop=loop)
+    executor.start_polling(dp, on_startup=on_startup)
+
+    # x = datetime.datetime.today()
+    # y = x.replace(day=x.day, hour=16, minute=30, second=0, microsecond=0)
+    # delta_t = y - x
+    # secs = delta_t.seconds
+    # print('seconds in main ' + str(secs))
+    # loop.call_later(repeat, send_message, loop)
+    # loop.run_until_complete(schedule.run_pending())
+# def repeat(coro, loop):
+#     x = datetime.datetime.today()
+#     y = x.replace(day=x.day+1, hour=12, minute=17, second=0, microsecond=0)
+#     delta_t = y - x
+#     secs = delta_t.seconds
+#     print('seconds in repeat ' + str(secs))
+#     asyncio.ensure_future(coro(), loop=loop)
+#     loop.call_later(60, repeat, coro, loop)
