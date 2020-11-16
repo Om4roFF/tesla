@@ -7,7 +7,7 @@ import requests
 from config import email, site, api
 
 
-async def branches():
+def branches():
     token = requests.post('https://{0}.s20.online/v2api/auth/login'.format(site),
                           json={'email': email, 'api_key': api}).text
 
@@ -22,7 +22,7 @@ async def branches():
     # items = items.split(',')
 
 
-async def customers(id):
+def customers(id):
     token = requests.post('https://{0}.s20.online/v2api/auth/login'.format(site),
                           json={'email': email, 'api_key': api}).text
 
@@ -51,7 +51,7 @@ async def customers(id):
                 return i
 
 
-async def get_name(text):
+def get_name(text):
     customer_list = text.split(',')
     s = customer_list[3]
     s = s.split(':')
@@ -60,7 +60,7 @@ async def get_name(text):
     return name
 
 
-async def get_grade(ID):
+def get_grade(ID):
     token = requests.post('https://{0}.s20.online/v2api/auth/login'.format(site),
                           json={'email': email, 'api_key': api}).text
 
@@ -117,7 +117,7 @@ async def get_grade(ID):
     return report
 
 
-async def is_phone(p):
+def is_phone(p):
     token = requests.post('https://{0}.s20.online/v2api/auth/login'.format(site),
                           json={'email': email, 'api_key': api}).text
 
@@ -134,13 +134,14 @@ async def is_phone(p):
     customer = requests.post('https://{0}.s20.online/v2api/1/customer/index'.format(site), headers=headers,
                              json={'phone': phone}).text
     a = json.loads(customer.replace("'", '"'))
+
     items = a['items']
     for i in items:
         return i['id']
     return None
 
 
-async def get_id_by_lesson(i_d):
+def get_id_by_lesson(i_d):
     token = requests.post('https://{0}.s20.online/v2api/auth/login'.format(site),
                           json={'email': email, 'api_key': api}).text
 
