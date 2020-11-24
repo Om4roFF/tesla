@@ -27,7 +27,6 @@ def start(message: types.Message):
 
 
 def lang_step(message):
-    print(message)
     try:
         if message.text == '/start':
             markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
@@ -55,12 +54,10 @@ def lang_step(message):
             msg = bot.send_message(message.chat.id, lang_phrases(lang_code, 1), parse_mode=HTML, reply_markup=markup)
             bot.register_next_step_handler(msg, phone_step, lang_code)
     except Exception as e:
-        print('lang-step')
         bot.send_message(877012379, str(e))
 
 
 def phone_step(message, lang):
-    print('in phone step')
     try:
         if message.text == '/start':
             markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
@@ -72,7 +69,6 @@ def phone_step(message, lang):
             delete(message)
         else:
             id = is_phone(message.text)
-            print(id)
             if id:
                 msg = bot.send_message(message.chat.id, lang_phrases(lang, 0), parse_mode=HTML)
                 bot.register_next_step_handler(msg, grade_step, lang, id)
@@ -95,56 +91,60 @@ def grade_step(message, lang, i_d):
             delete(message)
         else:
             markup = types.ReplyKeyboardRemove()
-            msg = bot.send_message(message.chat.id, lang_phrases(lang, 9), parse_mode=HTML, reply_markup=markup)
+            msg = bot.send_message(message.chat.id, lang_phrases(lang, 9), parse_mode=HTML)
             id = message.text
-            report = get_grade(int(i_d))
-            bot.delete_message(message.chat.id, msg.message_id)
-            if not report:
-                bot.send_message(message.chat.id, (lang, 14), parse_mode=HTML)
-            else:
-                bot.send_message(message.chat.id, lang_phrases(lang, 13), parse_mode=HTML)
-                count = 0
-                customer = customers(id)
-                name = get_name(customer)
-                create_table()
-                insert(message.chat.id, i_d, lang, name.strip())
-                for i in report:
-                    length = len(i)
-                    time_from = i[1]
-                    date = time_from[:10]
-                    topic = i[3]
-                    subject = i[2]
-                    bonus = ''
-                    note = ''
-                    done = ''
-                    tasks = ''
-                    right_task = ''
-                    if length == 7:
-                        done = i[4]
-                        bonus = i[5]
-                        note = i[6]
-                    elif length == 9:
-                        done = i[5]
-                        tasks = i[6]
-                        right_task = i[4]
-                        done = done + ' ' + get_percent(tasks, done)
-                        right_task = right_task + ' ' + get_percent(tasks, right_task)
-                        bonus = i[7]
-                        note = i[8]
-                    if bonus is None:
+            report = []
+            if int(id) == int(i_d) or int(id) == int(get_id_by_lesson(id)):
+                report = get_grade(int(i_d))
+                bot.delete_message(message.chat.id, msg.message_id)
+                if not report:
+                    bot.send_message(message.chat.id, (lang, 14), parse_mode=HTML)
+                else:
+                    bot.send_message(message.chat.id, lang_phrases(lang, 13), parse_mode=HTML, reply_markup=markup)
+                    count = 0
+                    customer = customers(id)
+                    name = get_name(customer)
+                    create_table()
+                    insert(message.chat.id, i_d, lang, name.strip())
+                    for i in report:
+                        length = len(i)
+                        time_from = i[1]
+                        date = time_from[:10]
+                        topic = i[3]
+                        subject = i[2]
                         bonus = ''
-                    if note is None:
                         note = ''
+                        done = ''
+                        tasks = ''
+                        right_task = ''
+                        if length == 7:
+                            done = i[4]
+                            bonus = i[5]
+                            note = i[6]
+                        elif length == 9:
+                            done = i[5]
+                            tasks = i[6]
+                            right_task = i[4]
+                            done = done + ' ' + get_percent(tasks, done)
+                            right_task = right_task + ' ' + get_percent(tasks, right_task)
+                            bonus = i[7]
+                            note = i[8]
+                        if bonus is None:
+                            bonus = ''
+                        if note is None:
+                            note = ''
 
-                    bot.send_message(message.chat.id,
-                                     lang_phrases(lang, 12).format(name.strip(), date, subject,
-                                                                                    topic, tasks, done, right_task, bonus,
-                                                                                    note))
-                    count += 1
-                    # else:
-                    #     await query.message.answer('В данный момент оценок нет')
-                    if count > 3:
-                        break
+                        bot.send_message(message.chat.id,
+                                         lang_phrases(lang, 12).format(name.strip(), date, subject,
+                                                                                        topic, tasks, done, right_task, bonus,
+                                                                                        note))
+                        count += 1
+                        # else:
+                        #     await query.message.answer('В данный момент оценок нет')
+                        if count > 3:
+                            break
+            else:
+                bot.send_message(message.chat.id, lang_phrases(lang, 6), parse_mode=HTML)
     except Exception as e:
         bot.send_message(877012379, str(e))
 

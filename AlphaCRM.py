@@ -120,7 +120,6 @@ def get_grade(ID):
 def is_phone(p):
     token = requests.post('https://{0}.s20.online/v2api/auth/login'.format(site),
                           json={'email': email, 'api_key': api}).text
-
     TOKEN = token[10:len(token) - 2]
     headers = {'X-ALFACRM-TOKEN': TOKEN}
     phone = ''
@@ -134,7 +133,6 @@ def is_phone(p):
     customer = requests.post('https://{0}.s20.online/v2api/1/customer/index'.format(site), headers=headers,
                              json={'phone': phone}).text
     a = json.loads(customer.replace("'", '"'))
-
     items = a['items']
     for i in items:
         return i['id']
@@ -144,20 +142,16 @@ def is_phone(p):
 def get_id_by_lesson(i_d):
     token = requests.post('https://{0}.s20.online/v2api/auth/login'.format(site),
                           json={'email': email, 'api_key': api}).text
-
     TOKEN = token[10:len(token) - 2]
     headers = {'X-ALFACRM-TOKEN': TOKEN}
     lessons = requests.post('https://{0}.s20.online/v2api/1/lesson/index'.format(site), headers=headers).text
-    print(lessons)
     a = json.loads(lessons)
-    print(a)
     total = a['total']
     count = int(total) / 20 + 1
     for x in range(int(count)):
         lessons1 = requests.post('https://{0}.s20.online/v2api/1/lesson/index'.format(site), json={'page': x},
                                  headers=headers).text
         b = json.loads(lessons1)
-        time.sleep(1)
         items = b['items']
         for i in items:
             details = i['details']
@@ -165,34 +159,4 @@ def get_id_by_lesson(i_d):
                 if i_d == j['customer_id']:
                     return i_d
     return 0
-
-
-# k = customers(3530)
-# print(k)
-# name = get_name(k)
-# print(name)
-# s = get_id_by_lesson(3530)
-# print(s)
-# id = is_phone('87788881311')
-# print(id)
-#
-# grade = get_grade(3265)
-# print(grade)
-# +7(707)931-66-28
-# token = requests.post('https://{0}.s20.online/v2api/auth/login'.format(site),
-#                       json={'email': email, 'api_key': api}).text
-#
-# TOKEN = token[10:len(token) - 2]
-# headers = {'X-ALFACRM-TOKEN': TOKEN}
-# for x in range(int(4)):
-#
-#     lessons1 = requests.post('https://{0}.s20.online/v2api/1/lesson/index'.format(site), json={'page': x},
-#                              headers=headers).text
-#     print(lessons1)
-#     b = json.loads(lessons1)
-#     items = b['items']
-#     print(items)
-
-
-# get_grade(3530)
 
