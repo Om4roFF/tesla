@@ -63,57 +63,52 @@ def get_name(text):
 def get_grade(ID):
     token = requests.post('https://{0}.s20.online/v2api/auth/login'.format(site),
                           json={'email': email, 'api_key': api}).text
-
     TOKEN = token[10:len(token) - 2]
     headers = {'X-ALFACRM-TOKEN': TOKEN}
     report = list()
-    lessons = requests.post('https://{0}.s20.online/v2api/1/lesson/index'.format(site), headers=headers).text
-    a = json.loads(lessons)
-    total = a['total']
-    count = int(total) / 20 + 1
-    for x in range(int(count)):
-        lessons1 = requests.post('https://{0}.s20.online/v2api/1/lesson/index'.format(site), json={'page': x},
-                                 headers=headers).text
-        b = json.loads(lessons1)
-        items = b['items']
-        for i in items:
-            details = i['details']
-            for j in details:
-                if j['customer_id'] == ID:
-                    l = list()
-                    time_from = i['time_from']
-                    time_to = i['time_to']
-                    subject_id = i['subject_id']
-                    bonus = j['bonus']
-                    topic = i['topic']
-                    note = j['note']
-                    subjects = requests.post('https://{0}.s20.online/v2api/1/subject/index'.format(site),
-                                             headers=headers).text
-                    subjects = json.loads(subjects.replace("'", '"'))
-                    subjects = subjects['items']
-                    name = ''
-                    for k in subjects:
-                        if k['id'] == int(subject_id):
-                            name = k['name']
-                    grade = j['grade']
-                    grades = grade.split('/')
-                    lesson_id = j['lesson_id']
-                    l.append(lesson_id)
-                    l.append(time_from)
-                    l.append(name)
-                    l.append(topic)
-                    if len(grades) > 1:
-                        was = grades[0]
-                        done = grades[1]
-                        right = grades[2]
-                        l.append(was)
-                        l.append(done)
-                        l.append(right)
-                    else:
-                        l.append(grade)
-                    l.append(bonus)
-                    l.append(note)
-                    report.append(l)
+    lessons1 = requests.post('https://{0}.s20.online/v2api/1/lesson/index'.format(site), json={'customer_id': ID},
+                             headers=headers).text
+    b = json.loads(lessons1)
+    total = b['total']
+    items = b['items']
+    for i in range(total):
+        details = items[i]['details']
+        for j in details:
+            if j['customer_id'] == ID:
+                l = list()
+                time_from = items[i]['time_from']
+                time_to = items[i]['time_to']
+                subject_id = items[i]['subject_id']
+                bonus = j['bonus']
+                topic = items[i]['topic']
+                note = j['note']
+                subjects = requests.post('https://{0}.s20.online/v2api/1/subject/index'.format(site),
+                                         headers=headers).text
+                subjects = json.loads(subjects.replace("'", '"'))
+                subjects = subjects['items']
+                name = ''
+                for k in subjects:
+                    if k['id'] == int(subject_id):
+                        name = k['name']
+                grade = j['grade']
+                grades = grade.split('/')
+                lesson_id = j['lesson_id']
+                l.append(lesson_id)
+                l.append(time_from)
+                l.append(name)
+                l.append(topic)
+                if len(grades) > 1:
+                    was = grades[0]
+                    done = grades[1]
+                    right = grades[2]
+                    l.append(was)
+                    l.append(done)
+                    l.append(right)
+                else:
+                    l.append(grade)
+                l.append(bonus)
+                l.append(note)
+                report.append(l)
     return report
 
 
@@ -132,31 +127,28 @@ def is_phone(p):
         return None
     customer = requests.post('https://{0}.s20.online/v2api/1/customer/index'.format(site), headers=headers,
                              json={'phone': phone}).text
-    a = json.loads(customer.replace("'", '"'))
-    items = a['items']
-    for i in items:
-        return i['id']
-    return None
+    a = json.loads(customer)
+    x = int(a['total'])
+    ids = list()
+    for i in range(x):
+        print(a['items'][i])
+        ids.append(a['items'][i]['id'])
+    print(ids)
+    return ids
 
 
 def get_id_by_lesson(i_d):
     token = requests.post('https://{0}.s20.online/v2api/auth/login'.format(site),
                           json={'email': email, 'api_key': api}).text
     TOKEN = token[10:len(token) - 2]
+    print(TOKEN)
     headers = {'X-ALFACRM-TOKEN': TOKEN}
-    lessons = requests.post('https://{0}.s20.online/v2api/1/lesson/index'.format(site), headers=headers).text
+    lessons = requests.post('https://{0}.s20.online/v2api/1/lesson/index'.format(site), headers=headers, json={'customer_id': i_d}).text
     a = json.loads(lessons)
+    print(a)
     total = a['total']
-    count = int(total) / 20 + 1
-    for x in range(int(count)):
-        lessons1 = requests.post('https://{0}.s20.online/v2api/1/lesson/index'.format(site), json={'page': x},
-                                 headers=headers).text
-        b = json.loads(lessons1)
-        items = b['items']
-        for i in items:
-            details = i['details']
-            for j in details:
-                if i_d == j['customer_id']:
-                    return i_d
+    if total > 0:
+        return i_d
     return 0
+
 
