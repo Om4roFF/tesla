@@ -39,7 +39,7 @@ def send_message(message=None):
                     bonus = ''
                 if note is None:
                     note = ''
-                if date is not None:
+                if date == str(datetime.datetime.today().date()):
                     bot.send_message(877012379, j[0])
                     bot.send_message(j[0], lang_phrases(j[2], 12).format(j[3],
                                                                          date, subject,
