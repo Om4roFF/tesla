@@ -7,12 +7,11 @@ from bot import bot
 from lang_list import lang_phrases
 import schedule
 
+
 def send_message(message=None):
     try:
         l = select()
-        print(l)
         for j in l:
-            print(j)
             time.sleep(1)
             report = get_grade(j[1])
             bonus = ''
@@ -21,7 +20,6 @@ def send_message(message=None):
             tasks = ''
             right_task = ''
             for i in report:
-                print(i)
                 length = len(i)
                 time_from = i[1]
                 date = time_from[:10]
@@ -41,18 +39,17 @@ def send_message(message=None):
                     bonus = ''
                 if note is None:
                     note = ''
-                if date == str(datetime.datetime.today().date()):
+                if date is not None:
                     bot.send_message(877012379, j[0])
-                    print('here')
                     bot.send_message(j[0], lang_phrases(j[2], 12).format(j[3],
-                                                                               date, subject,
-                                                                               topic, tasks, done,
-                                                                               right_task, bonus, note))
+                                                                         date, subject,
+                                                                         topic, tasks, done,
+                                                                         right_task, bonus, note))
     except Exception as e:
         bot.send_message(877012379, str(e))
 
 
-schedule.every().day.at('20:43').do(send_message)
+schedule.every().day.at('14:00').do(send_message)
 
 while True:
     schedule.run_pending()

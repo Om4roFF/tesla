@@ -4,15 +4,11 @@ import re
 import time
 
 import requests
-from config import email, site, api
-
+from config import site
+from token_schedule import headers1
+headers = headers1
 
 def branches():
-    token = requests.post('https://{0}.s20.online/v2api/auth/login'.format(site),
-                          json={'email': email, 'api_key': api}).text
-
-    TOKEN = token[10:len(token) - 2]
-    headers = {'X-ALFACRM-TOKEN': TOKEN}
     branch = requests.post('https://{0}.s20.online/v2api/branch/index'.format(site), headers=headers).content
     branch_str = branch.decode('utf-8')
     # branch_str = branch_str.split('{')
@@ -23,11 +19,7 @@ def branches():
 
 
 def customers(id):
-    token = requests.post('https://{0}.s20.online/v2api/auth/login'.format(site),
-                          json={'email': email, 'api_key': api}).text
 
-    TOKEN = token[10:len(token) - 2]
-    headers = {'X-ALFACRM-TOKEN': TOKEN}
     customer = requests.post('https://{0}.s20.online/v2api/1/customer/index'.format(site), headers=headers,
                              json={"id": id}).content
     customer = customer.decode('utf-8')
@@ -61,16 +53,14 @@ def get_name(text):
 
 
 def get_grade(ID):
-    token = requests.post('https://{0}.s20.online/v2api/auth/login'.format(site),
-                          json={'email': email, 'api_key': api}).text
-    TOKEN = token[10:len(token) - 2]
-    headers = {'X-ALFACRM-TOKEN': TOKEN}
     report = list()
     lessons1 = requests.post('https://{0}.s20.online/v2api/1/lesson/index'.format(site), json={'customer_id': ID},
                              headers=headers).text
     b = json.loads(lessons1)
     total = b['total']
     items = b['items']
+    if total > 20:
+        total = 20
     for i in range(total):
         details = items[i]['details']
         for j in details:
@@ -111,12 +101,10 @@ def get_grade(ID):
                 report.append(l)
     return report
 
+# get_grade(1630)
+
 
 def is_phone(p):
-    token = requests.post('https://{0}.s20.online/v2api/auth/login'.format(site),
-                          json={'email': email, 'api_key': api}).text
-    TOKEN = token[10:len(token) - 2]
-    headers = {'X-ALFACRM-TOKEN': TOKEN}
     phone = ''
     if len(p) == 12:
         phone = p[0] + p[1] + '(' + p[2] + p[3] + p[4] + ')' + p[5] + p[6] + p[7] + '-' + p[8] + p[9] + '-' + p[10] + p[11]
@@ -131,21 +119,13 @@ def is_phone(p):
     x = int(a['total'])
     ids = list()
     for i in range(x):
-        print(a['items'][i])
         ids.append(a['items'][i]['id'])
-    print(ids)
     return ids
 
 
 def get_id_by_lesson(i_d):
-    token = requests.post('https://{0}.s20.online/v2api/auth/login'.format(site),
-                          json={'email': email, 'api_key': api}).text
-    TOKEN = token[10:len(token) - 2]
-    print(TOKEN)
-    headers = {'X-ALFACRM-TOKEN': TOKEN}
     lessons = requests.post('https://{0}.s20.online/v2api/1/lesson/index'.format(site), headers=headers, json={'customer_id': i_d}).text
     a = json.loads(lessons)
-    print(a)
     total = a['total']
     if total > 0:
         return i_d

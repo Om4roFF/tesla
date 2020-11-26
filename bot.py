@@ -97,15 +97,16 @@ def grade_step(message, lang, i_d):
                     report = get_grade(int(id))
                     print(report)
                     if not report:
-                        bot.send_message(message.chat.id, (lang, 14), parse_mode=HTML)
+                        bot.send_message(message.chat.id, lang_phrases(lang, 14), parse_mode=HTML)
                     else:
                         # bot.delete_message(message.chat.id, msg.message_id, timeout=5)
                         bot.send_message(message.chat.id, lang_phrases(lang, 13), parse_mode=HTML)
                         count = 0
                         customer = customers(id)
                         name = get_name(customer)
+                        print(name)
                         create_table()
-                        insert(message.chat.id, m, lang, name.strip())
+                        insert(message.chat.id, id, lang, name.strip())
                         for i in report:
                             length = len(i)
                             time_from = i[1]
@@ -141,6 +142,7 @@ def grade_step(message, lang, i_d):
                             count += 1
                             if count > 3:
                                 break
+                break
                 # else:
                 #     bot.send_message(message.chat.id, lang_phrases(lang, 6), parse_mode=HTML)
             bot.delete_message(message.chat.id, msg.message_id)
@@ -166,7 +168,6 @@ def delete_step(query):
         msg = bot.send_message(query.from_user.id, text=lang_phrases(1, 10), reply_markup=markup, parse_mode=HTML)
         bot.register_next_step_handler(msg, lang_step)
     else:
-        print(query)
         name = data
         delete_from_chat(chat_id=query.from_user.id, name=name)
         bot.send_message(query.from_user.id, 'Вы успешно отписались!')

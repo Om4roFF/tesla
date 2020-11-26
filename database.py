@@ -40,6 +40,8 @@ def insert(chat_id, student_id, lang, name):
     conn = sqlite3.connect("users.db")
     cursor = conn.cursor()
     s = select()
+    print(s)
+    print(str(chat_id) + ' ' + str(student_id) + ' ' + str(lang) + ' ' + str(name))
     for i in s:
         if str(i[0]) == str(chat_id) and str(i[1]) == str(student_id):
             return -1
