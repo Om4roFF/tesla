@@ -118,13 +118,13 @@ def student_step(message, lang, i_d):
                     markup.add(lang_phrases(lang, 4))
                     markup.add(lang_phrases(lang, 5))
                     msg = bot.send_message(message.chat.id, text=lang_phrases(lang, 3).format(name), reply_markup=markup, parse_mode=HTML)
-                    bot.register_next_step_handler(msg, grade_step, name, id, lang)
+                    bot.register_next_step_handler(msg, grade_step, name, id, lang, i_d)
                     break
     except Exception as e:
         bot.send_message(877012379, 'student_step end ' + str(e))
 
 
-def grade_step(message, name, i_d, lang):
+def grade_step(message, name, i_d, lang, ids):
     try:
         if message.text == '/start':
             markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
@@ -189,11 +189,8 @@ def grade_step(message, name, i_d, lang):
                 #     bot.send_message(message.chat.id, lang_phrases(lang, 6), parse_mode=HTML)
             bot.delete_message(message.chat.id, msg.message_id)
         elif message.text == lang_phrases(lang, 5):
-            markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-            markup.add('Рус ' + "🇷🇺")
-            markup.add('Қаз ' + "🇰🇿")
-            msg = bot.send_message(message.chat.id, text=lang_phrases(1, 10), reply_markup=markup, parse_mode=HTML)
-            bot.register_next_step_handler(msg, lang_step)
+            msg = bot.send_message(message.chat.id, lang_phrases(lang, 0), parse_mode=HTML)
+            bot.register_next_step_handler(msg, student_step, lang, ids)
     except Exception as e:
         # bot.send_message(message.chat.id, '')
         bot.send_message(877012379, 'grade_step end ' + str(e))

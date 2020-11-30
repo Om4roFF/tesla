@@ -1,7 +1,7 @@
 import datetime
 import time
 
-from AlphaCRM import get_grade
+from alpha_crm_grade import get_grade
 from database import select
 from bot import bot
 from lang_list import lang_phrases
