@@ -13,7 +13,12 @@ def send_message(message=None):
         l = select()
         for j in l:
             time.sleep(1)
-            report = get_grade(j[1])
+            try:
+                report = get_grade(j[1])
+            except Exception as e:
+                bot.send_message(877012379, 'send_msg ' + str(e))
+                time.sleep(20)
+                report = get_grade(j[1])
             bonus = ''
             note = ''
             done = ''
@@ -40,7 +45,6 @@ def send_message(message=None):
                 if note is None:
                     note = ''
                 if date == str(datetime.datetime.today().date()):
-                    bot.send_message(877012379, j[0])
                     bot.send_message(j[0], lang_phrases(j[2], 12).format(j[3],
                                                                          date, subject,
                                                                          topic, tasks, done,
