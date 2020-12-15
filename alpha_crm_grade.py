@@ -10,8 +10,9 @@ def get_grade(ID):
         token = requests.post('https://{0}.s20.online/v2api/auth/login'.format(site),
                               json={'email': email, 'api_key': api}).text
 
-        TOKEN = token[10:len(token) - 2] + 'q'
+        TOKEN = token[10:len(token) - 2]
         headers = {'X-ALFACRM-TOKEN': TOKEN}
+        print(TOKEN)
         report = list()
         lessons1 = requests.post('https://{0}.s20.online/v2api/1/lesson/index'.format(site), json={'customer_id': ID},
                                  headers=headers).text
@@ -63,4 +64,4 @@ def get_grade(ID):
             return report
 
 
-print(get_grade(1998))
+print(get_grade(1630))

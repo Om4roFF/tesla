@@ -1,3 +1,4 @@
+import datetime
 import sqlite3
 import os
 
@@ -15,12 +16,12 @@ def create_table():
         print('create')
         cursor.execute("""CREATE TABLE chat(chat_id int,student_id int, lang int, name varchar)""")
         conn.commit()
-    cursor.execute('''SELECT count(name) FROM sqlite_master WHERE type='table' AND name='chat' ''')
+    cursor.execute('''SELECT count(name) FROM sqlite_master WHERE type='table' AND name='lessons' ''')
     if cursor.fetchone()[0] == 1:
         pass
     else:
-        print('create ')
-        cursor.execute('''CREATE TABLE homework(lesson_date varchar ,work varchar ,group varchar )''')
+        print('create')
+        cursor.execute('''CREATE TABLE lessons(student_id int, lesson_id int,datetime varchar ,status int)''')
         conn.commit()
 
 
@@ -90,3 +91,18 @@ def delete_from_chat(chat_id, name):
     cursor = conn.cursor()
     cursor.execute('DELETE FROM chat WHERE chat_id = {0} and name = \'{1}\''.format(chat_id, name))
     conn.commit()
+
+
+def select_by_status(student_id):
+    today = datetime.datetime.now()
+    d = datetime.timedelta(days=5)
+    a = str(today - d)
+    conn = sqlite3.connect("users.db")
+    cursor = conn.cursor()
+    sql = f'SELECT student_id, lesson_id FROM lessons WHERE status = 0 and datetime>{a} and student_id = {student_id}'
+    print(sql)
+    cursor.execute(sql)
+    s = cursor.fetchall()
+    conn.commit()
+    return s
+

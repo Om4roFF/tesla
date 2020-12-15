@@ -2,19 +2,23 @@ import datetime
 import time
 
 from alpha_crm_grade import get_grade
-from database import select
+from alpha_crm_lesson import get_lesson_grade
+from database import select, select_by_status
 from bot import bot
 from lang_list import lang_phrases
 import schedule
 
 
-def send_message(message=None):
+def send_message():
     try:
         l = select()
         for j in l:
-            time.sleep(1)
+            s = select_by_status(j[1])
+            for i in s:
+
+
             try:
-                report = get_grade(j[1])
+                report = get_lesson_grade(j[1])
             except Exception as e:
                 bot.send_message(877012379, 'send_msg ' + str(e))
                 time.sleep(20)

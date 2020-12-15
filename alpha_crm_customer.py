@@ -35,3 +35,6 @@ def customers(id):
                 if st != '':
                     if int(st) == int(id):
                         return i
+
+
+print(customers(1630))
