@@ -1,7 +1,6 @@
 import json
 import requests
 from config import email, site, api
-from database import select
 
 
 def get_id_by_lesson(i_d):
@@ -31,12 +30,10 @@ def get_lesson_grade(lesson_id, student_id):
 
         TOKEN = token[10:len(token) - 2]
         headers = {'X-ALFACRM-TOKEN': TOKEN}
-        print(TOKEN)
         report = list()
         lessons1 = requests.post('https://{0}.s20.online/v2api/1/lesson/index'.format(site), json={'id': lesson_id},
                                  headers=headers).text
         b = json.loads(lessons1)
-        print(b)
         if 'items' in b:
             total = b['total']
             items = b['items']
@@ -81,7 +78,3 @@ def get_lesson_grade(lesson_id, student_id):
                         l.append(note)
                         report.append(l)
             return report
-
-
-print(get_lesson_grade(4141, 1630))
-

@@ -12,12 +12,10 @@ def get_grade(ID):
 
         TOKEN = token[10:len(token) - 2]
         headers = {'X-ALFACRM-TOKEN': TOKEN}
-        print(TOKEN)
         report = list()
         lessons1 = requests.post('https://{0}.s20.online/v2api/1/lesson/index'.format(site), json={'customer_id': ID},
                                  headers=headers).text
         b = json.loads(lessons1)
-        print(b)
         if 'items' in b:
             total = b['total']
             items = b['items']
@@ -62,6 +60,3 @@ def get_grade(ID):
                         l.append(note)
                         report.append(l)
             return report
-
-
-print(get_grade(1630))
