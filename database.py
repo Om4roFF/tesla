@@ -9,7 +9,6 @@ def create_table():
     conn = sqlite3.connect("users.db")
     cursor = conn.cursor()
     cursor.execute('''SELECT count(name) FROM sqlite_master WHERE type='table' AND name='chat' ''')
-    print(cursor.fetchone()[0])
     if cursor.fetchone()[0] == 1:
         pass
         print('exists')

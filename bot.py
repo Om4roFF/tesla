@@ -6,7 +6,7 @@ from alpha_crm_grade import get_grade
 from alpha_crm_lesson import get_id_by_lesson
 from alpha_crm_phone import is_phone
 from alpha_crm_customer import customers
-from database import create_table, insert, select, is_user, select_by_id, delete_from_chat
+from database import create_table, insert, select_by_id, delete_from_chat
 from lang_list import lang_phrases
 from config import TOKEN
 
@@ -26,7 +26,7 @@ def start(message: types.Message):
             msg = bot.send_message(message.chat.id, text=lang_phrases(1, 10), reply_markup=markup, parse_mode=HTML)
             bot.register_next_step_handler(msg, lang_step)
     except Exception as e:
-        bot.send_message(877012379, str(e))
+        print(e)
 
 
 def lang_step(message):
@@ -57,7 +57,7 @@ def lang_step(message):
                 msg = bot.send_message(message.chat.id, lang_phrases(lang_code, 1), parse_mode=HTML, reply_markup=markup)
                 bot.register_next_step_handler(msg, phone_step, lang_code)
     except Exception as e:
-        bot.send_message(877012379, str(e))
+        print(e)
 
 
 def phone_step(message, lang):
@@ -74,8 +74,9 @@ def phone_step(message, lang):
         try:
             ids = is_phone(message.text)
         except Exception as e:
-            bot.send_message(877012379, str(e))
+            print(e)
             ids = is_phone(message.text)
+            print(ids)
         if ids:
             msg = bot.send_message(message.chat.id, lang_phrases(lang, 0), parse_mode=HTML)
             bot.register_next_step_handler(msg, student_step, lang, ids)
@@ -85,7 +86,7 @@ def phone_step(message, lang):
 
 
 def student_step(message, lang, i_d):
-    try:
+    # try:
         if message.text == '/start':
             markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
             markup.add('Рус ' + "🇷🇺")
@@ -96,14 +97,19 @@ def student_step(message, lang, i_d):
             delete(message)
         else:
             id = message.text
+            print(id)
+            print(i_d)
             for m in i_d:
                 is_lesson_id = ''
+                print('m', m)
                 try:
+                    print('in lesson_id')
                     is_lesson_id = get_id_by_lesson(id)
                 except Exception as e:
                     bot.send_message(877012379, 'lesson_id' + str(e))
                     is_lesson_id = get_id_by_lesson(id)
                 if int(id) == int(m) or int(id) == int(is_lesson_id):
+                    print('verification')
                     customer = ''
                     try:
                         customer = customers(id)
@@ -120,8 +126,8 @@ def student_step(message, lang, i_d):
                     msg = bot.send_message(message.chat.id, text=lang_phrases(lang, 3).format(name), reply_markup=markup, parse_mode=HTML)
                     bot.register_next_step_handler(msg, grade_step, name, id, lang, i_d)
                     break
-    except Exception as e:
-        bot.send_message(877012379, 'student_step end ' + str(e))
+    # except Exception as e:
+    #     bot.send_message(877012379, 'student_step end ' + str(e))
 
 
 def grade_step(message, name, i_d, lang, ids):

@@ -10,12 +10,12 @@ import schedule
 
 
 def send_message():
-    try:
-        l = select()
-        print(l)
-        for j in l:
-            s = select_by_status(j[1])
-            print(s)
+    l = select()
+    print(l)
+    for j in l:
+        s = select_by_status(j[1])
+        print(s)
+        try:
             for m in s:
                 try:
                     report = get_lesson_grade(m[1], m[0])
@@ -55,9 +55,9 @@ def send_message():
                                                                    topic, tasks, done,
                                                                    right_task, bonus, note))
                 update_status(student_id=j[1], lesson_id=m[1])
-        delete_from_lessons()
-    except Exception as e:
-        bot.send_message(877012379, str(e))
+        except Exception as e:
+            bot.send_message(877012379, str(e))
+    delete_from_lessons()
 
 
 schedule.every().day.at('20:00').do(send_message)
