@@ -131,83 +131,52 @@ def student_step(message, lang, i_d):
 
 
 def grade_step(message, name, i_d, lang, ids):
-    try:
-        if message.text == '/start':
-            markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-            markup.add('Рус ' + "🇷🇺")
-            markup.add('Қаз ' + "🇰🇿")
-            msg = bot.send_message(message.chat.id, text=lang_phrases(1, 10), reply_markup=markup, parse_mode=HTML)
-            bot.register_next_step_handler(msg, lang_step)
-        elif message.text == '/delete':
-            delete(message)
-        elif message.text == lang_phrases(lang, 4):
-            markup = types.ReplyKeyboardRemove()
-            msg = bot.send_message(message.chat.id, lang_phrases(lang, 9), parse_mode=HTML, reply_markup=markup)
-            report = []
-            try:
-                report = get_grade(int(i_d))
-            except Exception as e:
-                time.sleep(4)
-                bot.send_message(877012379, 'get_grade ' + str(e))
-                report = get_grade(int(i_d))
-            print('---------------------')
-            print(report)
-            if not report:
-                bot.send_message(message.chat.id, lang_phrases(lang, 14), parse_mode=HTML)
-            else:
-                bot.send_message(message.chat.id, lang_phrases(lang, 13), parse_mode=HTML)
-                count = 0
-                for i in report:
-                    length = len(i)
-                    time_from = i[1]
-                    date = time_from[:10]
-                    topic = i[3]
-                    subject = i[2]
+    if message.text == '/start':
+        markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+        markup.add('Рус ' + "🇷🇺")
+        markup.add('Қаз ' + "🇰🇿")
+        msg = bot.send_message(message.chat.id, text=lang_phrases(1, 10), reply_markup=markup, parse_mode=HTML)
+        bot.register_next_step_handler(msg, lang_step)
+    elif message.text == '/delete':
+        delete(message)
+    elif message.text == lang_phrases(lang, 4):
+        markup = types.ReplyKeyboardRemove()
+        msg = bot.send_message(message.chat.id, lang_phrases(lang, 9), parse_mode=HTML, reply_markup=markup)
+        report = []
+        try:
+            report = get_grade(int(i_d))
+        except Exception as e:
+            print(e)
+            time.sleep(4)
+            report = get_grade(int(i_d))
+        if not report:
+            bot.send_message(message.chat.id, lang_phrases(lang, 14), parse_mode=HTML)
+        else:
+            bot.send_message(message.chat.id, lang_phrases(lang, 13), parse_mode=HTML)
+            count = 0
+            for lesson in report:
+                time_from = lesson.date
+                date = time_from[:10]
+                topic = lesson.topic
+                subject = lesson.subject
+                bonus = lesson.bonus
+                note = lesson.note
+                grade = lesson.grade
+                if bonus is None:
                     bonus = ''
+                if note is None:
                     note = ''
-                    done = ''
-                    tasks = ''
-                    right_task = ''
-                    if length == 7:
-                        done = i[4]
-                        bonus = i[5]
-                        note = i[6]
-                    elif length == 9:
-                        done = i[5]
-                        tasks = i[6]
-                        right_task = i[4]
-                        done = done + ' ' + get_percent(tasks, done)
-                        right_task = right_task + ' ' + get_percent(tasks, right_task)
-                        bonus = i[7]
-                        note = i[8]
-                    if bonus is None:
-                        bonus = ''
-                    if note is None:
-                        note = ''
-                    bot.send_message(message.chat.id,
-                                     lang_phrases(lang, 12).format(name.strip(), date, subject,
-                                                                   topic, tasks, done, right_task, bonus,
-                                                                   note))
-                    count += 1
-                    if count > 2:
-                        break
-                # else:
-                #     bot.send_message(message.chat.id, lang_phrases(lang, 6), parse_mode=HTML)
-            bot.delete_message(message.chat.id, msg.message_id)
-        elif message.text == lang_phrases(lang, 5):
-            msg = bot.send_message(message.chat.id, lang_phrases(lang, 0), parse_mode=HTML)
-            bot.register_next_step_handler(msg, student_step, lang, ids)
-    except Exception as e:
-        # bot.send_message(message.chat.id, '')
-        bot.send_message(877012379, 'grade_step end ' + str(e))
-
-
-def get_percent(full, value):
-    if float(full) == 0:
-        return '0 %'
-    else:
-        percent = (float(value) * 100) / float(full)
-        return '(%.1f ' % percent + '%)'
+                bot.send_message(message.chat.id,
+                                 lang_phrases(lang, 12).format(name.strip(), date, subject,
+                                                               topic, grade, bonus,
+                                                               note))
+                count += 1
+                if count > 2:
+                    break
+        bot.delete_message(message.chat.id, msg.message_id)
+    elif message.text == lang_phrases(lang, 5):
+        msg = bot.send_message(message.chat.id, lang_phrases(lang, 0), parse_mode=HTML)
+        bot.register_next_step_handler(msg, student_step, lang, ids)
 
 
 @bot.callback_query_handler(func=lambda query: True)

@@ -26,6 +26,6 @@ def is_phone(p):
         if 'total' in a:
             x = int(a['total'])
             ids = list()
-            for i in range(x):
-                ids.append(a['items'][i]['id'])
+            for i in a['items']:
+                ids.append(i['id'])
             return ids

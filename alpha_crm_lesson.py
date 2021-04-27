@@ -1,6 +1,7 @@
 import json
 import requests
 from config import email, site, api
+from lesson_model import Lesson
 
 
 def get_id_by_lesson(i_d):
@@ -43,9 +44,7 @@ def get_lesson_grade(lesson_id, student_id):
                 details = items[i]['details']
                 for j in details:
                     if j['customer_id'] == student_id:
-                        l = list()
                         time_from = items[i]['time_from']
-                        time_to = items[i]['time_to']
                         subject_id = items[i]['subject_id']
                         bonus = j['bonus']
                         topic = items[i]['topic']
@@ -59,22 +58,7 @@ def get_lesson_grade(lesson_id, student_id):
                             if k['id'] == int(subject_id):
                                 name = k['name']
                         grade = j['grade']
-                        grades = grade.split('/')
                         lesson_id = j['lesson_id']
-                        l.append(lesson_id)
-                        l.append(time_from)
-                        l.append(name)
-                        l.append(topic)
-                        if len(grades) > 1:
-                            was = grades[0]
-                            done = grades[1]
-                            right = grades[2]
-                            l.append(was)
-                            l.append(done)
-                            l.append(right)
-                        else:
-                            l.append(grade)
-                        l.append(bonus)
-                        l.append(note)
-                        report.append(l)
+                        lesson = Lesson(lesson_id, time_from, name, topic, grade, bonus, note)
+                        report.append(lesson)
             return report
